@@ -1,8 +1,10 @@
-# Melbourne Housing Price Prediction – Linear Regression
+# Melbourne Housing Price Prediction – Linear Regression + A/B Testing
 
-Simple linear regression model trained on the classic **Melbourne Housing Market** dataset to predict house prices.
+End-to-end project that trains a Linear Regression model on the Melbourne Housing dataset **and** runs a proper A/B test comparing two feature sets with statistical significance testing.
 
-## Results
+---
+
+## 1. Linear Regression Model
 
 | Metric | Value |
 |--------|-------|
@@ -10,50 +12,70 @@ Simple linear regression model trained on the classic **Melbourne Housing Market
 | **RMSE** | ≈ $442,330 |
 | **R²** | ≈ 0.507 |
 
-### Features used
-- Rooms
-- Bathroom
-- Landsize
-- BuildingArea
-- YearBuilt
-- Lattitude
-- Longtitude
-- Distance
-- Car
-
-Missing values were handled with **median imputation**.
-
-## How to run
+**Features used:** Rooms, Bathroom, Landsize, BuildingArea, YearBuilt, Lattitude, Longtitude, Distance, Car  
+Missing values handled with median imputation.
 
 ```bash
-# 1. Download the dataset (melb_data.csv)
-#    You can get it from the original Melbourne housing dataset
-#    or place the file in this directory.
-
-# 2. Install dependencies
 pip install -r requirements.txt
-
-# 3. Train the model
 python train_model.py
 ```
 
-## Dataset
+---
 
-`melb_data.csv` – Melbourne housing data (13,580 rows).
+## 2. A/B Test
 
-Place the CSV file in the same folder as `train_model.py` before running.
+We compared two versions of the model:
 
-Source: Public Melbourne housing market data (commonly used on Kaggle).
+| Group | Features | MAE |
+|-------|----------|-----|
+| **A (Control)** | Rooms, Bathroom, Distance, Car | **$346,837** |
+| **B (Treatment)** | + Landsize, BuildingArea, YearBuilt, Lat, Long | **$297,172** |
 
-## Project structure
+### Results
+- **Improvement**: Version B reduced MAE by **14.3%** ($49,665 absolute)
+- **p-value**: `0.000000` (highly significant)
+- **t-statistic**: 14.08
+- **95% CI of difference**: [$42,751 – $56,579]
+- **Sample size**: 3,395 properties
+
+**Conclusion**: Version B is statistically significantly better (p < 0.05). We reject the null hypothesis.
+
+```bash
+python ab_test.py
+```
+
+---
+
+## Project Structure
 
 ```
 melbourne-housing-linear-regression/
-├── melb_data.csv          # (add this file)
-├── train_model.py
+├── train_model.py      # Train & evaluate Linear Regression
+├── ab_test.py          # A/B test with statistical significance
 ├── requirements.txt
-└── README.md
+├── README.md
+└── melb_data.csv       # (add this file locally)
 ```
 
-## Author
+## How to run everything
+
+1. Place `melb_data.csv` in the project root
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Train the model:
+   ```bash
+   python train_model.py
+   ```
+4. Run the A/B test:
+   ```bash
+   python ab_test.py
+   ```
+
+## Dataset
+Melbourne Housing Market data (13,580 rows). Commonly used on Kaggle.
+
+---
+
 Created with Grok
